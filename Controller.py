@@ -1,46 +1,51 @@
 from PyQt5.QtCore import *
+from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 import serial
 import time
 
 class Controller(QThread):
     received_data = pyqtSignal(str)
 
-    def __init__(self, port, baudrate):
+    def __init__(self, port_name, baudrate, timeout):
         super().__init__()
-        self.port = port
-        self.baudrate = baudrate
+        self.ser = serial.Serial(port_name, baudrate=baudrate, timeout=timeout)
+
         self.connection = False
-        self.exitThread = False
+        self.count = 0
         
-        while True:
-            try:
-                self.ser = serial.Serial(self.port, baudrate=self.baudrate)
-            
-            except serial.SerialException:
-                continue
-            else:
-                print("connect", self.ser)
-                self.connection = True
-                break
+        if not self.ser.is_open:
+            print("connection failed")
+            raise
+
+        else:
+            print("connect success")
+            print(self.ser)
+            self.connection = True
         
 
     def run(self):
-        count = 0
-        while self.connection == True:
-            try:
-                res = self.ser.readline()
-                data = res.decode("utf-8")
-                
-                self.received_data.emit(data)
-                
-            except ValueError:
-                print("Value Error")
-            except serial.SerialException:
-                print("disconnected")
-                self.ser.close()
-                self.connection = False
-            except UnicodeDecodeError:
-                print("Unicode Decode Error")
+        while self.connection:
+            if self.ser.readable():
+                try:
+                    res = self.ser.readline().strip()
+                    data = res.decode()
+                    
+                    if data != "":
+                        self.received_data.emit(data)
+
+                except ValueError:
+                    print("Value Error")
+                except serial.SerialException:
+                    print("disconnected")
+                    self.ser.close()
+                    self.connection = False
+                except UnicodeDecodeError:
+                    print("Unicode Decode Error")
+
+    def sendData(self, data):
+        if self.connection:
+            data += "\n"
+            self.ser.write(data.encode())
 
     def stop(self):
         self.connection = False

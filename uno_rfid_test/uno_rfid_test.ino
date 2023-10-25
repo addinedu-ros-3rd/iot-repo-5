@@ -1,10 +1,20 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#define RFID_SS_PIN 10
-#define RFID_RST_PIN 4
+"""
+PIN SETUP
+RST   9
+SDA   10
+SCK   13
+MOSI  11
+MISO  12
+"""
+
+
+#define RST_PIN     9 // any available GPIO          
+#define SS_PIN      10 // SPI_CS -> GPIO 10
  
-MFRC522 rfid(RFID_SS_PIN, RFID_RST_PIN); // Instance of the class
+MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
 MFRC522::MIFARE_Key key;
 
 // Init array that will store new NUID 
@@ -21,8 +31,6 @@ void setup() {
   for (byte i = 0; i < 6; i++) {
     key.keyByte[i] = 0xFF;
   }
-
-
 }
 
 void loop() {
@@ -37,7 +45,7 @@ void loop() {
       Serial.println(input);
     }
   }
-  Serial.println(i++);
+  // Serial.println(i++);
   delay(1000/100);
 }
 
@@ -59,24 +67,15 @@ void scanRFID() {
     return;
   }
   
-  if (rfid.uid.uidByte[0] != nuidPICC[0] || 
-    rfid.uid.uidByte[1] != nuidPICC[1] || 
-    rfid.uid.uidByte[2] != nuidPICC[2] || 
-    rfid.uid.uidByte[3] != nuidPICC[3] ) {
-
-    // Store NUID into nuidPICC array
-    for (byte i = 0; i < 4; i++) {
-      nuidPICC[i] = rfid.uid.uidByte[i];
-    }
-    
-    Serial.print(F("RFID Detected "));
-    printHex(rfid.uid.uidByte, rfid.uid.size);
-    Serial.println();
+  // Store NUID into nuidPICC array
+  for (byte i = 0; i < 4; i++) {
+    nuidPICC[i] = rfid.uid.uidByte[i];
   }
-  else return;
-
-  // Serial.println(rfid.MIFARE_GetValue((byte *)rfid.uid.uidByte, (int32_t *)rfid.uid.size));
-
+  
+  Serial.print(F("RFID Detected "));
+  printHex(rfid.uid.uidByte, rfid.uid.size);
+  Serial.println();
+  
   // Halt PICC
   rfid.PICC_HaltA();
 

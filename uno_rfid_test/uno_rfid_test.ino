@@ -31,7 +31,21 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   scanRFID();
+  readFromESP();
   delay(100);
+}
+
+
+
+
+void readFromESP() {
+  while (Serial.available()){
+    char c = Serial.read();
+    Serial.print(c);
+    if (c == '\n') {
+      return;
+    }
+  }
 }
 
 void scanRFID() {

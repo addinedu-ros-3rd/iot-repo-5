@@ -12,7 +12,6 @@
 #define MPU_SDA 2
 #define MPU_SCL 1
 
-
 const int MPU_ADDR = 0x68; // I2C address of the MPU-6050
 int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
 
@@ -20,19 +19,31 @@ void setup() {
   setupMPU();
 
   Serial.begin(115200);
+  
+  // wait for connection from pc
+  while (!Serial);
+  delay(500);
+  Serial.println("PC Setup Complete");
+  
   Serial1.begin(115200, SERIAL_8N1, 18, 17);  // RX TX
   Serial.println("Setup complete");
 }
+
 
 void loop() {
 
   printAccGyro();
 
   readFromUno();
+
+  readFromPC();
   
   delay(100);
 }
 
+
+
+// while이라 uno로 보낼 때 딜레이 생김
 void readFromUno() {
   while (Serial1.available()){
     char c = Serial1.read();
@@ -42,6 +53,30 @@ void readFromUno() {
     }
   }
 }
+
+void readFromPC() {
+  while (Serial.available()){
+    char c = Serial.read();
+    Serial1.print(c);
+    switch (c) {
+      case '\n':
+        return;
+      case 'U':
+        moveUp();
+      case 'B':
+        moveDown();
+      case 'R':
+        moveRight();
+      case 'L':
+        moveLeft();
+    }
+  }
+}
+
+void moveUp() {}
+void moveDown() {}
+void moveRight() {}
+void moveLeft() {}
 
 void setupMPU() {
   Wire.begin(MPU_SDA, MPU_SCL, 100000); // sda, scl
@@ -64,11 +99,11 @@ void printAccGyro() {
   GyY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
   GyZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
 
-
-  Serial.print(AcX); Serial.print(", ");
-  Serial.print(AcY); Serial.print(" ");
-  Serial.print(AcZ); Serial.print(", ");
-  Serial.print(GyX); Serial.print(", ");
-  Serial.print(GyY); Serial.print(", ");
+  Serial.print("MPU ");
+  Serial.print(AcX); Serial.print(",");
+  Serial.print(AcY); Serial.print(",");
+  Serial.print(AcZ); Serial.print(",");
+  Serial.print(GyX); Serial.print(",");
+  Serial.print(GyY); Serial.print(",");
   Serial.print(GyZ); Serial.print("\n");
 }

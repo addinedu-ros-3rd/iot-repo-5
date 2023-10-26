@@ -47,7 +47,7 @@ class WindowClass(QMainWindow, from_class) :
         self.comboBaudrate.addItem("115200")
 
     def updateController(self, data):
-        print(data)
+        # print(data)
         self.textInfo.appendPlainText(data)
 
     def pressConnect(self):

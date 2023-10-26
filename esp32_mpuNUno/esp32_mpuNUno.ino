@@ -20,7 +20,7 @@ void setup() {
   setupMPU();
 
   Serial.begin(115200);
-  Serial1.begin(115200);
+  Serial1.begin(115200, SERIAL_8N1, 18, 17);  // RX TX
   Serial.println("Setup complete");
 }
 
@@ -34,9 +34,12 @@ void loop() {
 }
 
 void readFromUno() {
-  if (Serial1.available()){
-    String s = Serial1.readStringUntil('\n');
-    Serial.println(s);
+  while (Serial1.available()){
+    char c = Serial1.read();
+    Serial.print(c);
+    if (c == '\n') {
+      return;
+    }
   }
 }
 
@@ -62,10 +65,10 @@ void printAccGyro() {
   GyZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
 
 
-  Serial.print(AcX); Serial.print(" , ");
-  Serial.print(AcY); Serial.print(" , ");
-  Serial.print(AcZ); Serial.print(" , ");
-  Serial.print(GyX); Serial.print(" , ");
-  Serial.print(GyY); Serial.print(" , ");
+  Serial.print(AcX); Serial.print(", ");
+  Serial.print(AcY); Serial.print(" ");
+  Serial.print(AcZ); Serial.print(", ");
+  Serial.print(GyX); Serial.print(", ");
+  Serial.print(GyY); Serial.print(", ");
   Serial.print(GyZ); Serial.print("\n");
 }

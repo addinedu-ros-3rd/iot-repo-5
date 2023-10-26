@@ -1,1 +1,4 @@
 __pycache__
+.vscode
+
+window_pyqt_env.py

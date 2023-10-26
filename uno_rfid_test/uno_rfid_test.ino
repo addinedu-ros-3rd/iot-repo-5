@@ -57,9 +57,9 @@ void scanRFID() {
     nuidPICC[i] = rfid.uid.uidByte[i];
   }
   
-  Serial.print(F("RFID "));
+  Serial.print(F("RFID"));
   printHex(rfid.uid.uidByte, rfid.uid.size);
-  Serial.println("");
+  Serial.println();
   
   // Halt PICC
   rfid.PICC_HaltA();

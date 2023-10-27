@@ -12,11 +12,48 @@
 #define MPU_SDA 2
 #define MPU_SCL 1
 
+// Motor Connections
+#define ENA 10  // Right Side Motor
+#define IN1 9
+#define IN2 8
+#define ENB 4  // Left Side Motor
+#define IN3 6
+#define IN4 5
+
+// Motor Speed Rate (PWM)
+const int minENA = 0;
+const int maxENA = 255;
+const int minENB = 0;
+const int maxENB = 255;
+
+static const char goForward = 'w';
+static const char goBackward = 's';
+static const char turnLeft = 'a';
+static const char turnRight = 'd';
+static const char returnChar = '\n'
+
+
 const int MPU_ADDR = 0x68; // I2C address of the MPU-6050
 int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
 
 void setup() {
   setupMPU();
+
+  // Motor pin set up
+  pinMode(ENA, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  // Start with motors off
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENA, minENA);
+  analogWrite(ENB, minENA);
 
   Serial.begin(115200);
   
@@ -42,7 +79,6 @@ void loop() {
 }
 
 
-
 // while이라 uno로 보낼 때 딜레이 생김
 void readFromUno() {
   while (Serial1.available()){
@@ -54,29 +90,81 @@ void readFromUno() {
   }
 }
 
+
 void readFromPC() {
   while (Serial.available()){
-    char c = Serial.read();
+    char direction = Serial.read();
     Serial1.print(c);
-    switch (c) {
-      case '\n':
+    switch (direction) {
+      case returnChar:
         return;
-      case 'U':
-        moveUp();
-      case 'B':
+      case goForward:
+        moveFoward();
+      case goBackward:
         moveDown();
-      case 'R':
+      case turnRight:
         moveRight();
-      case 'L':
+      case turnLeft:
         moveLeft();
     }
+    stopMotors();
   }
 }
 
-void moveUp() {}
-void moveDown() {}
-void moveRight() {}
-void moveLeft() {}
+void motorAccel() {
+  analogWrite(ENA, maxENA);
+  analogWrite(ENB, maxENB);
+}
+
+
+void stopMotors() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+
+}
+
+
+void moveForward() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+
+  motorAccel();
+}
+
+
+void moveBackward() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+
+  motorAccel();
+}
+
+
+void moveRight() {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
+
+  motorAccel();
+}
+
+
+void moveLeft() {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+
+  motorAccel();
+}
+
 
 void setupMPU() {
   Wire.begin(MPU_SDA, MPU_SCL, 100000); // sda, scl
@@ -85,6 +173,7 @@ void setupMPU() {
   Wire.write(0);     // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
 }
+
 
 void printAccGyro() {
   Wire.beginTransmission(MPU_ADDR);

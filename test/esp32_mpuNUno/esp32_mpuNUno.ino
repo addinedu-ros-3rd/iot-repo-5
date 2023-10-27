@@ -9,6 +9,9 @@
 // TX  17
 // RX  18
 
+#define MPU_SDA 2
+#define MPU_SCL 1
+
 void setup() {
   setupMPU();
 

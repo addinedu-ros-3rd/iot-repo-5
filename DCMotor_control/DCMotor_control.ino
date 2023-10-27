@@ -27,10 +27,6 @@ void motorAccel() {
   analogWrite(ENB, 255);
 }
 
-void motorDecel() {
-  analogWrite(ENA, 255);
-  analogWrite(ENB, 255);
-}
 
 void setForward() {
   digitalWrite(IN1, HIGH);
@@ -39,12 +35,14 @@ void setForward() {
   digitalWrite(IN4, LOW);
 }
 
+
 void setBackward() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
 }
+
 
 void setClockwise() {
   digitalWrite(IN1, HIGH);
@@ -53,6 +51,7 @@ void setClockwise() {
   digitalWrite(IN4, HIGH);
 }
 
+
 void setCounterclockwise() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
@@ -60,12 +59,14 @@ void setCounterclockwise() {
   digitalWrite(IN4, LOW);
 }
 
+
 void stopMotors() {
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
 }
+
 
 void setup() {
   pinMode(ENA, OUTPUT);
@@ -85,6 +86,7 @@ void setup() {
   analogWrite(ENB, 0);
 }
 
+
 void loop() {
   char input[4] = {'a', 'd', 's', 'w'};
 
@@ -100,15 +102,12 @@ void loop() {
           //Serial.println("going forward!");
           setForward();
           motorAccel();
-          motorDecel();
           break;
         
         // Backward
         case goBackward:
           //Serial.println("going backward!");
           setBackward();
-          motorAccel();
-          motorDecel();
           break;
         
         // Turn Clockwise
@@ -116,7 +115,6 @@ void loop() {
           //Serial.println("turning left!");
           setClockwise();
           motorAccel();
-          motorDecel();
           break;
           
         // Turn Counterclockwise
@@ -124,7 +122,6 @@ void loop() {
           //Serial.println("turning right!");
           setCounterclockwise();
           motorAccel();
-          motorDecel();
           break;
       }
     }

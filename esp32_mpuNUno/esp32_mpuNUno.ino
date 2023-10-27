@@ -94,7 +94,7 @@ void readFromUno() {
 void readFromPC() {
   while (Serial.available()){
     char direction = Serial.read();
-    Serial1.print(c);
+    Serial1.print(direction);
     switch (direction) {
       case returnChar:
         return;

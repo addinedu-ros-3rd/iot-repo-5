@@ -15,4 +15,4 @@ with requests.session() as s:
         print(data.text)
         # res = requests.put(url, {"move": "H"})
         end = time.perf_counter()- start
-        print(end)
+        # print(end)

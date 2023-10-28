@@ -13,7 +13,7 @@ import serial.tools.list_ports
 # from pyqtgraph import PlotWidget, plot
 # import pyqtgraph as pg
 
-from Client import Client
+from test.Controller import Controller
 
 
 
@@ -24,13 +24,11 @@ class WindowClass(QMainWindow, from_class) :
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        
+        self.controller = None
 
-        try:
-            self.client = Client("192.168.4.1", 80)
-            print("Connect Success")
-        except:
-            print("Connect Failed")
-            sys.exit()
+        self.resetPortDrop()
+        self.resetBaudDrop()
 
         # self.graphWidget = pg.GraphicsLayout()
 
@@ -66,21 +64,40 @@ class WindowClass(QMainWindow, from_class) :
         self.btnLeft.released.connect(self.releaseBtn)
 
         self.timer = QTimer()
-        self.hold_type = 'p'
+        self.hold_type = None
         self.timer.timeout.connect(self.btnHoldEvent)
+
+        self.btnConnect.pressed.connect(self.pressConnect)
+        self.btnSend.pressed.connect(self.pressSend)
+        self.btnReset.pressed.connect(self.pressReset)
 
     # def plot(self):
     #     for j in range(self.num_MPU_data):
     #         self.curve[j].setData(self.x_data, self.y_datas[j])
     #                             #   name=self.data_label[j])
 
+    def resetPortDrop(self):
+        self.comboPort.clear()
+        ports = serial.tools.list_ports.comports()
+
+        available_ports = [p.device for p in ports]
+        if len(available_ports) > 0:
+            available_ports.sort()
+            for p in available_ports:
+                self.comboPort.addItem(p)
+
+    def resetBaudDrop(self):
+        self.comboBaudrate.clear()
+        self.comboBaudrate.addItem("9600")
+        self.comboBaudrate.addItem("115200")
+
     def updateRFID(self, data):
-        if self.client:
+        if self.controller:
             # print(data)
             self.textInfo.appendPlainText(data)
 
     def updateMPU(self, datas):
-        if self.client:
+        if self.controller:
             self.textInfo.appendPlainText(datas)
 
             # self.x_data.append(self.i)
@@ -93,48 +110,74 @@ class WindowClass(QMainWindow, from_class) :
             # self.plot()
         
 
+
+    def errorController(self):
+        self.controller.stop()
+        self.controller = None
+
+    def pressReset(self):
+        if self.controller:
+            self.controller.stop()
+
         self.textInfo.clear()
         self.resetPortDrop()
         self.resetBaudDrop()
 
+    def pressConnect(self):
+        port_name = self.comboPort.currentText()
+        baudrate = int(self.comboBaudrate.currentText())
+
+        try:
+            self.controller = Controller(port_name=port_name, baudrate=baudrate, timeout=(1/100))
+            self.controller.daemon = True
+            self.controller.rfid_data.connect(self.updateRFID)
+            self.controller.mpu_data.connect(self.updateMPU)
+            self.controller.error_flag.connect(self.errorController)
+            self.controller.start()
+
+        except:
+            self.controller = None
+            return
+
     def pressSend(self):
-        if self.client.running:
+        if self.controller.connection:
             text = self.lineEdit.text()
-            self.client.sendData = text
+            self.controller.sendData(text)
 
         
     def pressUp(self):
-        if self.client:
-            self.client.sendData = "w"
+        if self.hold_type is None:
+            self.controller.sendData("w")
         self.timer.start(100)
         self.hold_type = "w"
     
     def pressDown(self):
-        if self.client:
-            self.client.sendData = "s"
+        if self.hold_type is None:
+            self.controller.sendData("s")
         self.timer.start(100)
         self.hold_type = "s"
     
     def pressRight(self):
-        if self.client:
-            self.client.sendData = "d"
+        if self.hold_type is None:
+            self.controller.sendData("d")
         self.timer.start(100)
         self.hold_type = "d"
     
     def pressLeft(self):
-        if self.client:
-            self.client.sendData = "a"
+        if self.hold_type is None:
+            self.controller.sendData("a")
         self.timer.start(100)
         self.hold_type = "a"
 
     def releaseBtn(self):
-        self.hold_type = "p"
+        self.hold_type = None
         self.timer.stop()
 
     def btnHoldEvent(self):
         self.textInfo.appendPlainText(self.hold_type)
-        if self.client:
-            self.client.sendData = self.hold_type
+        if self.controller:
+            self.controller.sendData(self.hold_type)
+
         
 
 if __name__ == "__main__":

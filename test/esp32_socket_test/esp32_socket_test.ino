@@ -60,17 +60,16 @@ static const char TURN_RIGHT = 'd';
 static const char RETURN_CHAR = '\n';
 
 char direction;
-String currentLine = "";
 
 
 const int MPU_ADDR = 0x68; // I2C address of the MPU-6050
 int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
 
-
-const char* ssid     = "addinedu308_2.4GHz";
-const char* password = "addinedu1";
+const char *ssid = "yourAP";
+const char *password = "yourPassword";
 
 WiFiServer server(80);
+WiFiClient client;
 
 void setup()
 {
@@ -78,27 +77,24 @@ void setup()
   setupMotors();
   
   Serial.begin(115200);
+  Serial1.begin(115200);
   // We start by connecting to a WiFi network
 
   Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  Serial.println("Configuring access point...");
 
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
+  // You can remove the password parameter if you want the AP to be open.
+  // a valid password must have more than 7 characters
+  if (!WiFi.softAP(ssid, password)) {
+    log_e("Soft AP creation failed.");
+    while(1);
   }
-
-  Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-  
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(myIP);
   server.begin();
-
+  
+  Serial.println("Server started");
 }
 
 void setupMPU() {
@@ -125,72 +121,59 @@ void setupMotors() {
   digitalWrite(IN4, LOW);
   analogWrite(ENA, minENA);
   analogWrite(ENB, minENA);
-} 
+}
 
 
 void loop(){
- WiFiClient client = server.available();   // listen for incoming clients
+ client = server.available();   // listen for incoming clients
 
   if (client) {                             // if you get a client,
-    Serial.println("New Client.");           // print a message out the serial port
-    currentLine = "";                // make a String to hold incoming data from the client
     direction = '\n';
-    
     while (client.connected()) {
       if (client.available()) {
-        char c = client.read();
-        Serial.write(c);
-        
-        if (c == '\n') {                    // if the byte is a newline character
-
-          // if the current line is blank, you got two newline characters in a row.
-          // that's the end of the client HTTP request, so send a response:
-          if (currentLine.length() == 0) {
-            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
-            // and a content-type so the client knows what's coming, then a blank line:
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/plain");
-            client.println();
-            Serial.println(direction);
-            // send data to pc
-            moveCar(client, direction);
-            direction = '\n';
-            readFromUno(client);
-            
-            // The HTTP response ends with another blank line:
-//            client.println();
-            // break out of the while loop:
-            break;
-          } else {    // if you got a newline, then clear currentLine:
-            currentLine = "";
-          }
-        } else if (c != '\r') {  // if you got anything else but a carriage return character,
-          currentLine += c;      // add it to the end of the currentLine
-        }
-
-        // read data from pc
-        direction = checkEnd();
-        
+        String s = client.readStringUntil('\n');
+        Serial.println(s);
       }
+
+      client.print("Move ");
+      client.println(direction);
+      Serial.print("Move ");
+      Serial.println(direction);
+          
+      direction = '\n';
+      readFromUno();
+
+      moveCar(direction);
+//        direction = checkEnd(currentLine); 
+     
+      delay(100);
     }
-    // close the connection:
-    client.stop();
     Serial.println("Client Disconnected.");
   }
 }
 
-char checkEnd() {
+char checkEnd(String line) {
   // Check to see if the client request was "GET /H" or "GET /L":
-//  Serial.println(direction);
-  if (currentLine.endsWith("GET /w")) {return 'w';}
-  else if (currentLine.endsWith("GET /a")) {return 'a';}
-  else if (currentLine.endsWith("GET /s")) {return 's';}
-  else if (currentLine.endsWith("GET /d")) {return 'd';}
+  if (line.endsWith("GET /w")) {
+    moveForward();
+  }
+  else if (line.endsWith("GET /a")) {
+    moveRight();
+  }
+  else if (line.endsWith("GET /s")) {
+    moveBackward();
+  }
+  else if (line.endsWith("GET /d")) {
+    moveLeft();
+  }
+  else {
+    stopMotors();
+  }
 }
 
-void moveCar(WiFiClient client, char direction) {
+void moveCar(char direction) {
   // print datas here
-  printAccGyro(client);
+  printAccGyro();
   switch (direction) {
     case RETURN_CHAR:
       stopMotors();
@@ -208,16 +191,17 @@ void moveCar(WiFiClient client, char direction) {
       moveLeft();
       break;
   }
-//  stopMotors();
+  stopMotors();
 }
 
 
 // while이라 uno로 보낼 때 딜레이 생김
-void readFromUno(WiFiClient client) {
+void readFromUno() {
   while (Serial1.available()){
-    char tmp = Serial1.read();
-    client.print(tmp);
-    if (tmp == '\n') {
+    Serial.print("here is rfid");
+    char c = Serial1.read();
+    client.print(c);
+    if (c == '\n') {
       return;
     }
   }
@@ -278,7 +262,7 @@ void moveLeft() {
 }
 
 
-void printAccGyro(WiFiClient client) {
+void printAccGyro() {
   Wire.beginTransmission(MPU_ADDR);
   Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
   Wire.endTransmission(false);
@@ -298,5 +282,4 @@ void printAccGyro(WiFiClient client) {
   client.print(GyX); client.print(",");
   client.print(GyY); client.print(",");
   client.print(GyZ); client.print("\n");
-
 }

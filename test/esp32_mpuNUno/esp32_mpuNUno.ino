@@ -2,8 +2,16 @@
 
 // PIN SETUP
 
-// SCL 1
-// SDA 2
+// MPU6050
+// SCL 1 SDA 2
+
+// UNO
+// TX  17
+// RX  18
+
+#define MPU_SDA 2
+#define MPU_SCL 1
+
 void setup() {
   setupMPU();
 

@@ -19,7 +19,7 @@ byte nuidPICC[4];
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(9600);
   SPI.begin(); // Init SPI bus
   rfid.PCD_Init(); // Init MFRC522
 
@@ -30,21 +30,15 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  String inputStr = readFromESP();
   scanRFID();
-  readFromESP();
-  delay(100);
+//  delay(100);
 }
 
 
-
-
-void readFromESP() {
-  while (Serial.available()){
-    char c = Serial.read();
-    Serial.print(c);
-    if (c == '\n') {
-      return;
-    }
+String readFromESP() {
+  if (Serial.available()){
+    return Serial.readStringUntil('\n');
   }
 }
 
@@ -65,15 +59,24 @@ void scanRFID() {
     piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
     return;
   }
+
   
-  // Store NUID into nuidPICC array
-  for (byte i = 0; i < 4; i++) {
-    nuidPICC[i] = rfid.uid.uidByte[i];
+  if (rfid.uid.uidByte[0] != nuidPICC[0] || 
+    rfid.uid.uidByte[1] != nuidPICC[1] || 
+    rfid.uid.uidByte[2] != nuidPICC[2] || 
+    rfid.uid.uidByte[3] != nuidPICC[3] ) {
+
+      // Store NUID into nuidPICC array
+      for (byte i = 0; i < 4; i++) {
+        nuidPICC[i] = rfid.uid.uidByte[i];
+    }
+    // Store NUID into nuidPICC array
+    for (byte i = 0; i < 4; i++) {
+      nuidPICC[i] = rfid.uid.uidByte[i];
+    }
   }
   
-  Serial.print(F("RFID"));
   printHex(rfid.uid.uidByte, rfid.uid.size);
-  Serial.println();
   
   // Halt PICC
   rfid.PICC_HaltA();
@@ -86,8 +89,13 @@ void scanRFID() {
  * Helper routine to dump a byte array as hex values to Serial. 
  */
 void printHex(byte *buffer, byte bufferSize) {
+  Serial.print("RFID ");
   for (byte i = 0; i < bufferSize; i++) {
-    Serial.print(buffer[i] < 0x10 ? " 0" : " ");
+    if (i != 0) {
+      Serial.print(":");  
+    }
+    Serial.print(buffer[i] < 0x10 ? "0" : "");
     Serial.print(buffer[i], HEX);
   }
+  Serial.println();
 }

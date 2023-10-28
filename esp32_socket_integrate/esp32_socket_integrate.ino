@@ -55,6 +55,13 @@ struct splitedStr {
 };
 
 
+// Declare the calibration variables
+float RateRoll, RatePitch, RateYaw;
+float RateCalibrationRoll, RateCalibrationPitch, RateCalibrationYaw;
+int RateCalibrationNumber;
+
+
+
 //=============================================
 //=                   SETUP                   =
 //=============================================
@@ -88,11 +95,35 @@ void setup() {
 }
 
 void setupMPU() {
-  Wire.begin(MPU_SDA, MPU_SCL, 100000); // sda, scl
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x6B);  // PWR_MGMT_1 register
-  Wire.write(0);     // set to zero (wakes up the MPU-6050)
-  Wire.endTransmission(true);
+//  Wire.begin(MPU_SDA, MPU_SCL, 100000); // sda, scl
+//  Wire.beginTransmission(MPU_ADDR);
+//  Wire.write(0x6B);  // PWR_MGMT_1 register
+//  Wire.write(0);     // set to zero (wakes up the MPU-6050)
+//  Wire.endTransmission(true);
+  Wire.setClock(400000);
+  Wire.begin();
+  // time for MPU 6050 to start
+  delay(250);
+  
+  Wire.beginTransmission(0x68);
+  // start gyro in power mode
+  Wire.write(0x6B);
+  Wire.write(0x00);
+  Wire.endTransmission();
+
+  // Perform measurement calibration with 2000 read values
+  // takes 2 seconds in total 
+  for (RateCalibrationNumber = 0; RateCalibrationNumber < 2000; RateCalibrationNumber++)
+  {
+    gyro_signals();
+    RateCalibrationRoll += RateRoll;
+    RateCalibrationPitch += RatePitch;
+    RateCalibrationYaw += RateYaw;
+    delay(1); 
+  }
+  RateCalibrationRoll /= 2000;
+  RateCalibrationPitch /= 2000;
+  RateCalibrationYaw /= 2000;
 }
 
 void setupMotors() {
@@ -143,7 +174,7 @@ void loop() {
 
       direction = "p";
       rfid = "None";
-      mpu_data = "-1,-1,-1,-1,-1,-1";
+      mpu_data = "-1,-1,-1";
 
       delay(100);
     }
@@ -288,26 +319,89 @@ void moveLeft() {
   motorAccel();
 }
 
+//String getAccGyro() {
+//  Wire.beginTransmission(MPU_ADDR);
+//  Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
+//  Wire.endTransmission(false);
+//  Wire.requestFrom(MPU_ADDR, 14, true); // request a total of 14 registers
+//  AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+//  AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+//  AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+//  Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
+//  GyX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+//  GyY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+//  GyZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+//
+//  String tmp = "";
+//  tmp += AcX; tmp += ",";
+//  tmp += AcY; tmp += ",";
+//  tmp += AcZ; tmp += ",";
+//  tmp += GyX; tmp += ",";
+//  tmp += GyY; tmp += ",";
+//  tmp += GyZ;
+//
+//  return tmp;
+//}
+
+void gyro_signals(void)
+{
+  // Start I2C communication with the gyro
+  Wire.beginTransmission(0x68);  //0x68 == default address value of MPU6050 register
+
+  // configure external Frame Synchronization (FSYNC) pin sampling
+  // and the Digital Low Pass Filter (DLPF) setting for both the gyro and accelerometer
+  Wire.write(0x1A);
+  // setting external FSYNC pin sampling and DLPF to 10 Hz
+  Wire.write(0x05);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(0x68);
+  // set the sensitivity scale factor
+  // trigger gyro self-test and configure the gyros' full scale range
+  Wire.write(0x1B);
+  // measurements of MPU6050 are recorded in LSB (Least Significant Bits)
+  // +---------------------------------------------+
+  // | FS_SEL | Full Scale Range | LSB Sensitivity |
+  // |        |     (°/sec)      |   (LSB/°/sec)   |
+  // +---------------------------------------------+
+  // |    0   |     +/- 250      |       131       |
+  // |    1   |     +/- 500      |       65.5      |
+  // |    2   |     +/- 1000     |       32.8      |
+  // |    3   |     +/- 2000     |       16.4      |
+  // +---------------------------------------------+
+  // binary converted to hexadecimal value as an address
+  Wire.write(0x8);  // 0x08 == 65.5 LSB/deg/sec
+  Wire.endTransmission();
+
+  Wire.beginTransmission(0x68);
+  // Access register storing gyro measurements
+  Wire.write(0x43);
+  Wire.endTransmission();
+
+  // pull the information of the six registers from 43 to 48
+  Wire.requestFrom(0x68, 6);  // (first register, request 6 bytes)
+  // read the gyro measurements around the x, y, z-axis
+  // the result of an unsigned 16-bit measurements
+  int16_t GyroX = Wire.read() << 8 | Wire.read();
+  int16_t GyroY = Wire.read() << 8 | Wire.read();
+  int16_t GyroZ = Wire.read() << 8 | Wire.read();
+
+  // convert the measure,ent units to deg/sec
+  RateRoll = (float)GyroX / 65.5;
+  RatePitch = (float)GyroY / 65.5;
+  RateYaw = (float)GyroZ / 65.5;
+}
+
 String getAccGyro() {
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU_ADDR, 14, true); // request a total of 14 registers
-  AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
-  AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
-  Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
-  GyX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
-  GyY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  GyZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  // read and display gyro measurements
+  gyro_signals();
+  RateRoll -= RateCalibrationRoll;
+  RatePitch -= RateCalibrationPitch;
+  RateYaw -= RateCalibrationYaw;
 
   String tmp = "";
-  tmp += AcX; tmp += ",";
-  tmp += AcY; tmp += ",";
-  tmp += AcZ; tmp += ",";
-  tmp += GyX; tmp += ",";
-  tmp += GyY; tmp += ",";
-  tmp += GyZ;
-
+  tmp += RateRoll; tmp += ",";
+  tmp += RatePitch; tmp += ",";
+  tmp += RateYaw;
   return tmp;
 }

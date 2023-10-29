@@ -1,27 +1,24 @@
--- DROP TABLE IF EXISTS `mpu6050`;
+DROP TABLE IF EXISTS `mpu6050`;
 CREATE TABLE mpu6050
 (
     id INT NOT NULL,
-    time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    acc_x FLOAT,
-    acc_y FLOAT,
-    acc_z FLOAT,
-    gyro_x FLOAT,
-    gyro_y FLOAT,
-    gyro_z FLOAT,
+    time_stamp TIMESTAMP NOT NULL,
+    gyro_yaw DECIMAL(11, 5),
+    gyro_pitch DECIMAL(11, 5),
+    gyro_roll DECIMAL(11, 5),
     PRIMARY KEY (id)
 );
 
--- DROP TABLE IF EXISTS `motor`;
+DROP TABLE IF EXISTS `motor`;
 CREATE TABLE motor
 (
     id INT NOT NULL,
-    time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    direction VARCHAR(1),
+    time_stamp TIMESTAMP NOT NULL,
+    direction VARCHAR(2),
     PRIMARY KEY (id)
 );
 
--- DROP TABLE IF EXISTS `rfid_user`;
+DROP TABLE IF EXISTS `rfid_user`;
 CREATE TABLE rfid_user
 (
     id INT NOT NULL,
@@ -30,11 +27,11 @@ CREATE TABLE rfid_user
     PRIMARY KEY (id)
 );
 
--- DROP TABLE IF EXISTS `rfid_tag_log`;
+DROP TABLE IF EXISTS `rfid_tag_log`;
 CREATE TABLE rfid_tag_log
 (
     id INT NOT NULL,
-    time_stamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    time_stamp TIMESTAMP NOT NULL,
     uid VARCHAR(100),
     PRIMARY KEY (id)
 );

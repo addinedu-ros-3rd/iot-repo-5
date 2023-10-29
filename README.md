@@ -9,12 +9,12 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __NP0
 - Gyro Sensor   :   GY-521 (MPU 6050)
 - Motors (x2)   :   NP01D-288
 - Motor Driver  :   L298N
-- Wheels    :   $ \phi $ 66mm
+- Wheels    :   $\phi$ 66mm
 - Battery   :   1.5V * 4
 - RFID      :   MFRC522
 
 ## Body Design
-![Alt text](image.png)
+![Alt text](Body_design.png)
 
 ## How To Use
 ### Pin Settings

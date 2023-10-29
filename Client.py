@@ -13,7 +13,6 @@ class Client(QThread):
 
         self.running = False
 
-        self.tic = time.perf_counter()
         
         self.socket = socket.socket()
         self.recv_data = []
@@ -37,6 +36,7 @@ class Client(QThread):
         
     def readNSend(self):
         if self.running:
+            tic = time.perf_counter()
             receive_data = self.socket.recv(64)
             data = bytes(receive_data).decode('utf-8').strip("\r\n")
 
@@ -59,8 +59,8 @@ class Client(QThread):
             self.userName = "None"
 
             toc = time.perf_counter()
-            print("Time interval : ", toc - self.tic)
-            self.tic = toc
+            print("Time interval : ", toc - tic)
+            
 
     def splitInput(self, data):
         timestamp = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
@@ -77,6 +77,7 @@ class Client(QThread):
         except:
             print("Wrong input from ESP32")
             print("data", data, "\n----------------")
+            raise
 
         if (moveOper == "MOVE") and (moveType in ["w", "a", "s", "d"]):
             self.dbconn.insert_to_motor(timestamp, moveType)

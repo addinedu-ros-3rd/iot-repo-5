@@ -32,7 +32,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   String inputStr = readFromESP();
   scanRFID();
-//  delay(100);
+  delay(100);
 }
 
 

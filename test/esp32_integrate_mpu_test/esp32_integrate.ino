@@ -1,8 +1,55 @@
 #include <Wire.h>
 #include <WiFi.h>
 
-//#include "libraries\I2Cdev\I2Cdev.h"
-//#include "libraries\MPU6050\MPU6050_6Axis_MotionApps20.h"
+#include "MPU6050_6Axis_MotionApps20.h"
+
+
+MPU6050 mpu;
+ 
+#define INTERRUPT_PIN 14  // use pin 2 on Arduino Uno & most boards
+
+// MPU control/status vars
+bool dmpReady = false;  // set true if DMP init was successful
+uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
+uint8_t devStatus;      // return status after each device operation (0 = success, !0 = error)
+uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
+uint16_t fifoCount;     // count of all bytes currently in FIFO
+uint8_t fifoBuffer[64]; // FIFO storage buffer
+
+// orientation/motion vars
+Quaternion q;           // [w, x, y, z]         quaternion container
+VectorFloat gravity;    // [x, y, z]            gravity vector
+float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+VectorInt16 gy;         // [x, y, z]            gyro sensor measurements
+
+
+volatile bool mpuInterrupt = false;     // indicates whether MPU interrupt pin has gone high
+void dmpDataReady() {
+    mpuInterrupt = true;
+}
+
+#define SETPOINT_PITCH_ANGLE_OFFSET 6.5   // CHANGE!
+
+
+double setpointPitchAngle = SETPOINT_PITCH_ANGLE_OFFSET;
+double pitchGyroAngle = 0;
+//double pitchPIDOutput = 0;
+
+double setpointYawRate = 0;
+double yawGyroRate = 0;
+//double yawPIDOutput = 0;
+//
+//#define PID_PITCH_KP 17000
+//#define PID_PITCH_KI 0
+//#define PID_PITCH_KD 0
+//
+//#define PID_YAW_KP 0.5
+//#define PID_YAW_KI 0.5
+//#define PID_YAW_KD 0
+//
+//PID pitchPID(&pitchGyroAngle, &pitchPIDOutput, &setpointPitchAngle, PID_PITCH_KP, PID_PITCH_KI, PID_PITCH_KD, DIRECT);
+//PID yawPID(&yawGyroRate, &yawPIDOutput, &setpointYawRate, PID_YAW_KP, PID_YAW_KI, PID_YAW_KD, DIRECT);
+
 
 
 // PIN SETUP
@@ -15,12 +62,8 @@
 // RX  18
 
 
-// MPU Settings
-#define MPU_SDA 2
-#define MPU_SCL 1
-
-const int MPU_ADDR = 0x68; // I2C address of the MPU-6050
-int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
+const int MPUSCL = 1;
+const int MPUSDA = 2;
 
 // Motor Connections
 #define ENA 10  // Right Side Motor
@@ -94,51 +137,44 @@ void setup() {
   
   direction = "p";
   rfid = "None";
-  mpu_data = "-1/-1/-1/-1/-1/-1";
+  mpu_data = "0/0/0";
 }
 
 void setupMPU() {
-  Wire.begin(MPU_SDA, MPU_SCL, 100000); // sda, scl
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x6B);  // PWR_MGMT_1 register
-  Wire.write(0);     // set to zero (wakes up the MPU-6050)
-  Wire.endTransmission(true);
-  
-  //MPU6050 Clock Type
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x6B);  // PWR_MGMT_1 register
-  Wire.write(0x03);     // Selection Clock 'PLL with Z axis gyroscope reference'
-  Wire.endTransmission(true);
 
-  //MPU6050 Gyroscope Configuration Setting
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x1B);  // Gyroscope Configuration register
-  //Wire.write(0x00);     // FS_SEL=0, Full Scale Range = +/- 250 [degree/sec]
-  Wire.write(0x08);     // FS_SEL=1, Full Scale Range = +/- 500 [degree/sec]
-  //Wire.write(0x10);     // FS_SEL=2, Full Scale Range = +/- 1000 [degree/sec]
-  //Wire.write(0x18);     // FS_SEL=3, Full Scale Range = +/- 2000 [degree/sec]
-  Wire.endTransmission(true);
+  Wire.begin(MPUSDA, MPUSCL);
+  Wire.setClock(400000);
 
-  //MPU6050 Accelerometer Configuration Setting
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x1C);  // Accelerometer Configuration register
-  //Wire.write(0x00);     // AFS_SEL=0, Full Scale Range = +/- 2 [g]
-  //Wire.write(0x08);     // AFS_SEL=1, Full Scale Range = +/- 4 [g]
-  Wire.write(0x10);     // AFS_SEL=2, Full Scale Range = +/- 8 [g]
-  //Wire.write(0x18);     // AFS_SEL=3, Full Scale Range = +/- 10 [g]
-  Wire.endTransmission(true);
+  mpu.initialize();
+  pinMode(INTERRUPT_PIN, INPUT);
+  devStatus = mpu.dmpInitialize();
 
-  //MPU6050 DLPF(Digital Low Pass Filter)
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x1A);  // DLPF_CFG register
-  //Wire.write(0x00);     // Accel BW 260Hz, Delay 0ms / Gyro BW 256Hz, Delay 0.98ms, Fs 8KHz 
-  //Wire.write(0x01);     // Accel BW 184Hz, Delay 2ms / Gyro BW 188Hz, Delay 1.9ms, Fs 1KHz 
-  //Wire.write(0x02);     // Accel BW 94Hz, Delay 3ms / Gyro BW 98Hz, Delay 2.8ms, Fs 1KHz 
-  //Wire.write(0x03);     // Accel BW 44Hz, Delay 4.9ms / Gyro BW 42Hz, Delay 4.8ms, Fs 1KHz 
-  //Wire.write(0x04);     // Accel BW 21Hz, Delay 8.5ms / Gyro BW 20Hz, Delay 8.3ms, Fs 1KHz 
-  //Wire.write(0x05);     // Accel BW 10Hz, Delay 13.8ms / Gyro BW 10Hz, Delay 13.4ms, Fs 1KHz 
-  Wire.write(0x06);     // Accel BW 5Hz, Delay 19ms / Gyro BW 5Hz, Delay 18.6ms, Fs 1KHz 
-  Wire.endTransmission(true);
+  // supply your own gyro offsets here, scaled for min sensitivity
+//           X Accel  Y Accel  Z Accel   X Gyro   Y Gyro   Z Gyro
+//OFFSETS      2220,     -423,    1532,      70,     -15,    -121
+  mpu.setXAccelOffset(2016); 
+  mpu.setYAccelOffset(-427); 
+  mpu.setZAccelOffset(1504);   
+  mpu.setXGyroOffset(74);
+  mpu.setYGyroOffset(-12);
+  mpu.setZGyroOffset(-120);  
+  // make sure it worked (returns 0 if so)
+  if (devStatus == 0) 
+  {
+      // Calibration Time: generate offsets and calibrate our MPU6050
+      //mpu.CalibrateAccel(6);
+      //mpu.CalibrateGyro(6);
+      // turn on the DMP, now that it's ready
+      mpu.setDMPEnabled(true);
+      mpuIntStatus = mpu.getIntStatus();
+      dmpReady = true;
+      // get expected DMP packet size for later comparison
+      packetSize = mpu.dmpGetFIFOPacketSize();
+  } 
+  else 
+  {
+      Serial.println("MPU Setup Failed");
+  }
 }
 
 void setupMotors() {
@@ -189,7 +225,7 @@ void loop() {
 
       direction = "p";
       rfid = "None";
-      mpu_data = "-1,-1,-1";
+      mpu_data = "0/0/0";
 
       delay(100);
     }
@@ -219,7 +255,8 @@ void funcByInput(String s) {
 //  Serial.println(userOper);
 //  Serial.println(userType);
 
-  moveCar();  
+  moveCar();
+  // send user of rfid to uno function here
 }
 
 struct splitedStr splitByTwo(String s, char sep) {
@@ -239,16 +276,16 @@ struct splitedStr splitByTwo(String s, char sep) {
 
 // while이라 uno로 보낼 때 딜레이 생김
 void readFromUno() {
-  rfid = "None";
-  
   if (Serial1.available()) {
     struct splitedStr tmp;
     String s = Serial1.readStringUntil('\n');
     tmp = splitByTwo(s, ' ');
-    if (tmp.str2) {
-      rfid = tmp.str2;
-    }
+    rfid = tmp.str2;
     Serial.println(rfid);
+  }
+  else {
+    rfid = "None";
+//    Serial.println(rfid);
   }
 }
 
@@ -336,25 +373,28 @@ void moveLeft() {
 }
 
 String getAccGyro() {
-  Wire.beginTransmission(MPU_ADDR);
-  Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
-  Wire.endTransmission(false);
-  Wire.requestFrom(MPU_ADDR, 14, true); // request a total of 14 registers
-  AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
-  AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
-  Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
-  GyX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
-  GyY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  GyZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
-
   String tmp = "";
-  tmp += AcX; tmp += "/";
-  tmp += AcY; tmp += "/";
-  tmp += AcZ; tmp += "/";
-  tmp += GyX; tmp += "/";
-  tmp += GyY; tmp += "/";
-  tmp += GyZ;
+  
+  Serial.println("GetGyro");
+  
+  if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer)) 
+  {  
+//    mpu.dmpGetQuaternion(&q, fifoBuffer);
+//    mpu.dmpGetGravity(&gravity, &q);
+    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+//    mpu.dmpGetGyro(&gy, fifoBuffer);
 
+//    yawGyroRate = gy.z;                   //rotation rate in degrees per second
+    pitchGyroAngle = ypr[1] * 180/M_PI;   //angle in degree
+
+    // Yaw/Pitch/Roll
+    tmp += ypr[0]; tmp += "/";
+    tmp += ypr[1]; tmp += "/";
+    tmp += ypr[2];
+  }
+  else {
+    tmp = "-0/-0/-0";
+  }
+  
   return tmp;
 }

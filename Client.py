@@ -15,7 +15,9 @@ class Client(QThread):
         
         self.socket = socket.socket()
         self.recv_data = []
-        self.sendData = "p"
+        self.moveType = "p"
+        self.userName = "AA"
+
         try:
             self.socket.connect((addr, port))
             self.running = True
@@ -33,17 +35,23 @@ class Client(QThread):
             self.recv_data.extend(receive_data)
 
             if len(self.recv_data) != 0:
-                print(bytes(self.recv_data).decode('utf-8'))
+                data = bytes(self.recv_data).decode('utf-8')
+                self.splitInput(data)
                 self.recv_data = []
-                # client_socket.send  
+                # client_socket.send
             
-            s = "MOVE " + self.sendData + ",USER AA" + "\n"
+            s = "MOVE " + self.moveType + ",USER AA" + "\n"
             self.socket.send(s.encode())
             
-            self.sendData = "p"
+            self.moveType = "p"
+            
 
             toc = time.perf_counter()
+            print("Time interval : ", self.tic-toc)
             self.tic = toc
+
+    def splitInput(self, data):
+
     
     def stop(self):
         self.running = False

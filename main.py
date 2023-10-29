@@ -100,30 +100,30 @@ class WindowClass(QMainWindow, from_class) :
     def pressSend(self):
         if self.client.running:
             text = self.lineEdit.text()
-            self.client.sendData = text
+            self.client.moveType = text
 
         
     def pressUp(self):
         if self.client:
-            self.client.sendData = "w"
+            self.client.moveType = "w"
         self.timer.start(100)
         self.hold_type = "w"
     
     def pressDown(self):
         if self.client:
-            self.client.sendData = "s"
+            self.client.moveType = "s"
         self.timer.start(100)
         self.hold_type = "s"
     
     def pressRight(self):
         if self.client:
-            self.client.sendData = "d"
+            self.client.moveType = "d"
         self.timer.start(100)
         self.hold_type = "d"
     
     def pressLeft(self):
         if self.client:
-            self.client.sendData = "a"
+            self.client.moveType = "a"
         self.timer.start(100)
         self.hold_type = "a"
 
@@ -134,7 +134,7 @@ class WindowClass(QMainWindow, from_class) :
     def btnHoldEvent(self):
         self.textInfo.appendPlainText(self.hold_type)
         if self.client:
-            self.client.sendData = self.hold_type
+            self.client.moveType = self.hold_type
         
 
 if __name__ == "__main__":

@@ -23,10 +23,31 @@ class WindowClass(QMainWindow, from_class) :
         try:
             self.client = Client("192.168.4.1", 80)
             print("Connect Success")
-            self.client.rfid_user.connect(self.emitUser)
         except:
             print("Connect Failed")
             sys.exit()
+
+        # self.graphWidget = pg.GraphicsLayout()
+
+        # self.i = 0
+        # self.num_MPU_data = 6
+        # self.max_plot_size = 1000
+        # tmp = deque([0] * self.max_plot_size)
+        # self.x_data = tmp
+        # self.y_datas = [tmp for _ in range(self.num_MPU_data)]
+        # self.data_label = ["accX", "accY", "accZ", "gyroX", "gyroY", "gyroZ"]
+        
+        # self.graphWidget.showGrid(x=True, y=True)
+        # self.graphWidget.addLegend()
+        # self.graphWidget.setYRange(-10, 10, padding=0)
+        # self.plot = None
+        # self.curve = [None] * self.num_MPU_data
+
+        # self.colorList = ["#803723", "#1ff2ed", "#00fa5c",
+        #                 "#aff0ed", "#f1af00", "#803723"]
+
+        # for j in range(self.num_MPU_data):
+        #     self.curve[j] = self.graphWidget.plot(self.x_data, self.y_datas[j])
 
 
         self.btnUp.pressed.connect(self.pressUp)
@@ -43,6 +64,10 @@ class WindowClass(QMainWindow, from_class) :
         self.hold_type = 'p'
         self.timer.timeout.connect(self.btnHoldEvent)
 
+    # def plot(self):
+    #     for j in range(self.num_MPU_data):
+    #         self.curve[j].setData(self.x_data, self.y_datas[j])
+    #                             #   name=self.data_label[j])
 
     def updateRFID(self, data):
         if self.client:
@@ -53,7 +78,19 @@ class WindowClass(QMainWindow, from_class) :
         if self.client:
             self.textInfo.appendPlainText(datas)
 
+            # self.x_data.append(self.i)
+            # for j, data in enumerate(datas.split(",")[:self.num_MPU_data]):
+            #     self.y_datas[j][self.i] = float(data)
+
+            # if len(self.x_data) < self.max_plot_size:
+            #     self.i += 1
+
+            # self.plot()
+        
+
         self.textInfo.clear()
+        self.resetPortDrop()
+        self.resetBaudDrop()
 
     def pressSend(self):
         if self.client.running:

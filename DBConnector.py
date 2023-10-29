@@ -166,6 +166,24 @@ class DBConnector:
         finally:
             cursor.close()
 
+    def fetch_uid_from_user(self, uid):
+        if not self.connection:
+            print("Not connected to the database. Call connect() method first.")
+            return
+        
+        cursor = self.connection.cursor()
+
+        try:
+            select_query = "SELECT name FROM user WHERE uid LIKE %s"
+            data = (f'%{uid}%',)
+            cursor.execute(select_query, data)
+            result = cursor.fetchall()
+            return result
+        except mysql.connector.Error as err:
+            print(f"Error fetching user data: {err}")
+        finally:
+            cursor.close()
+
 
 
 if __name__ == "__main__":

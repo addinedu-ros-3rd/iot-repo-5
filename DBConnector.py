@@ -1,11 +1,13 @@
 import mysql.connector
+from PyQt5.QtCore import QThread
 
-class DBConnector:
+class DBConnector(QThread):
+
     def __init__(self):
-        self.host = "****"
+        self.host = "localhost"
         self.port = "3306"
-        self.user = "****"
-        self.password = "****"
+        self.user = "segway"
+        self.password = "1"
         self.database = "segway"
         self.connection = None
 
@@ -212,11 +214,11 @@ if __name__ == "__main__":
     # db.insert_to_motor("2023-10-28 23:53:39", "w")
     # db.insert_to_motor("2023-10-28 23:53:42", "d")
 
-    # # Insert data into RFID user table
-    # # 63:61:26:EC (card)
-    # db.insert_to_user("63:61:26:EC", "Hongki Cho", "2023-10-29")
-    # # # E3:73:C1:0D (tag)
-    # db.insert_to_user("E3:73:C1:0D", "Seoyoung Moon", "2023-10-29")
+    # Insert data into RFID user table
+    # 63:61:26:EC (card)
+    db.insert_to_rfid_user("63:61:26:EC", "Hongki Cho", "2023-10-29")
+    # E3:73:C1:0D (tag)
+    db.insert_to_rfid_user("E3:73:C1:0D", "Seoyoung Moon", "2023-10-29")
 
     # # Insert data into RFID tag log table
     # db.insert_to_rfid_tag_log("2023-10-28 23:53:39", "63:61:26:EC")

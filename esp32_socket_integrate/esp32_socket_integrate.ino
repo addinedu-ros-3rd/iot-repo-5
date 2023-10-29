@@ -19,6 +19,8 @@
 #define MPU_SDA 2
 #define MPU_SCL 1
 
+#define INTERRUPT_PIN 14  // use pin 2 on Arduino Uno & most boards
+
 const int MPU_ADDR = 0x68; // I2C address of the MPU-6050
 int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
 
@@ -98,6 +100,8 @@ void setup() {
 }
 
 void setupMPU() {
+  pinMode(INTERRUPT_PIN, INPUT);
+  
   Wire.begin(MPU_SDA, MPU_SCL, 100000); // sda, scl
   Wire.beginTransmission(MPU_ADDR);
   Wire.write(0x6B);  // PWR_MGMT_1 register
@@ -205,13 +209,18 @@ void funcByInput(String s) {
 
   String moveLine = tmp.str1;
   String userLine = tmp.str2;
+//  Serial.println(moveLine);
 
   tmp = splitByTwo(moveLine, ' ');
   String moveOper = tmp.str1;
   String moveType = tmp.str2;
 //  Serial.println(moveOper);
 //  Serial.println(moveType);
-  direction = moveType;
+  if (sizeof(moveType) > 0){
+    direction = moveType;
+  } else {
+    direction = "p";
+  }
 
   tmp = splitByTwo(userLine, ' ');
   String userOper = tmp.str1;
@@ -219,7 +228,8 @@ void funcByInput(String s) {
 //  Serial.println(userOper);
 //  Serial.println(userType);
 
-  moveCar();  
+  moveCar(); 
+  // send usertype to uno here 
 }
 
 struct splitedStr splitByTwo(String s, char sep) {
@@ -355,6 +365,6 @@ String getAccGyro() {
   tmp += GyX; tmp += "/";
   tmp += GyY; tmp += "/";
   tmp += GyZ;
-
+  Serial.println(tmp);
   return tmp;
 }

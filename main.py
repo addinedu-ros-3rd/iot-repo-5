@@ -1,14 +1,9 @@
 import sys, os
-import numpy as np
-from collections import deque
-from datetime import datetime
 
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-
-import serial.tools.list_ports
 
 # from pyqtgraph import PlotWidget, plot
 # import pyqtgraph as pg
@@ -27,7 +22,6 @@ class WindowClass(QMainWindow, from_class) :
 
         try:
             self.client = Client("192.168.4.1", 80)
-            self.client.rfid_user.connect(self.emitUser)
             print("Connect Success")
         except:
             print("Connect Failed")
@@ -107,25 +101,25 @@ class WindowClass(QMainWindow, from_class) :
     def pressUp(self):
         if self.client:
             self.client.moveType = "w"
-        self.timer.start(100)
+        self.timer.start(50)
         self.hold_type = "w"
     
     def pressDown(self):
         if self.client:
             self.client.moveType = "s"
-        self.timer.start(100)
+        self.timer.start(50)
         self.hold_type = "s"
     
     def pressRight(self):
         if self.client:
             self.client.moveType = "d"
-        self.timer.start(100)
+        self.timer.start(50)
         self.hold_type = "d"
     
     def pressLeft(self):
         if self.client:
             self.client.moveType = "a"
-        self.timer.start(100)
+        self.timer.start(50)
         self.hold_type = "a"
 
     def releaseBtn(self):
@@ -140,6 +134,7 @@ class WindowClass(QMainWindow, from_class) :
     def emitUser(self, userName):
         self.textInfo.appendPlainText("RFID tagged!")
         self.textInfo.appendPlainText("User Name :", userName)
+        print(userName)
 
         
 

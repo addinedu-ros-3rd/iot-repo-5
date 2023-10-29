@@ -2,7 +2,7 @@
 
 ## What is Self Balancing Robot
 > __Self Balancing Robot__ is a robot that stands on its own like __Segway__.
-This Robot requires __PID motor control__ and __Gyro sensor__, and we used __NP01D-288__ and __MPU6050__.
+This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L298N__ and __MPU6050__.
 
 ## Used
 - MCU   :   Espressif ESP32-S3 N16R8, Arduino Uno
@@ -51,16 +51,17 @@ SS_PIN      10
 3. Run ```main.py```
 
 
-## If you want to PID Controll (Only PID Motor Controll)
+## If you want to PID Controll (Only PID Motor Controll) - ESP32 Nano
 
 ### Pin Settings
 - ESP32 Nano
 ![](<Balanced Robot.png>)
 
 ### Program Settings
-1. Build ```test/BalancedRobot-main/Balanced_Robot/Balanced_Robot.ino``` into ESP32 Nano
+1. Build ```Balanced_Robot/Balanced_Robot.ino``` into ESP32 Nano
 
 
 ## Reference
 - [Espressif - ESP32](https://github.com/espressif/arduino-esp32)
 - [PyQt5 Docs](https://doc.qt.io/qtforpython-5/PySide2/QtWidgets/index.html)
+- [I2CDev - MPU6050](https://github.com/jrowberg/i2cdevlib/tree/master/Arduino/MPU6050)

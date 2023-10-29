@@ -27,6 +27,7 @@ class WindowClass(QMainWindow, from_class) :
 
         try:
             self.client = Client("192.168.4.1", 80)
+            self.client.rfid_user.connect(self.emitUser)
             print("Connect Success")
         except:
             print("Connect Failed")
@@ -135,6 +136,11 @@ class WindowClass(QMainWindow, from_class) :
         self.textInfo.appendPlainText(self.hold_type)
         if self.client:
             self.client.moveType = self.hold_type
+    
+    def emitUser(self, userName):
+        self.textInfo.appendPlainText("RFID tagged!")
+        self.textInfo.appendPlainText("User Name :", userName)
+
         
 
 if __name__ == "__main__":

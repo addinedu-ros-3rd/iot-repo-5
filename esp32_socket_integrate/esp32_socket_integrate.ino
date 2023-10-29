@@ -94,7 +94,7 @@ void setup() {
   
   direction = "p";
   rfid = "None";
-  mpu_data = "-1/-1/-1/-1/-1/-1";
+  mpu_data = "0/0/0/0/0/0";
 }
 
 void setupMPU() {
@@ -189,7 +189,7 @@ void loop() {
 
       direction = "p";
       rfid = "None";
-      mpu_data = "-1,-1,-1";
+      mpu_data = "0/0/0/0/0/0";
 
       delay(100);
     }

@@ -26,7 +26,7 @@ class WindowClass(QMainWindow, from_class) :
             print("Connect Failed")
             sys.exit()
 
-        self.client.rfid_user.connect(self.emitUser)  
+        # self.client.rfid_user.connect(self.emitUser)  
 
 
         self.btnUp.pressed.connect(self.pressUp)

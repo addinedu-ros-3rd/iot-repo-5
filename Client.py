@@ -21,7 +21,7 @@ class Client(QThread):
 
         self.dbconn = DBConnector()
         self.dbconn.connect()
-        self.dbconn.rfid_user.connect(self.emitUser)
+        # self.dbconn.rfid_user.connect(self.emitUser)
 
         try:
             self.socket.connect((addr, port))

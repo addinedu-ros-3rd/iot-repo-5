@@ -11,7 +11,6 @@ from PyQt5.QtCore import *
 from Client import Client
 
 
-
 from_class = uic.loadUiType(os.getcwd() +\
                             "/segway.ui")[0]
 
@@ -23,10 +22,11 @@ class WindowClass(QMainWindow, from_class) :
         try:
             self.client = Client("192.168.4.1", 80)
             print("Connect Success")
-            self.client.rfid_user.connect(self.emitUser)
-        except:
+        except :
             print("Connect Failed")
             sys.exit()
+
+        self.client.rfid_user.connect(self.emitUser)  
 
 
         self.btnUp.pressed.connect(self.pressUp)

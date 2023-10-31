@@ -17,6 +17,10 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 ![Alt text](Body_design.png)
 
 ## How To Use
+### Install
+1. ```Arduino > Tools > Board > Boards Manager > esp32 (Espressif)```
+2. ```Arduino > Tools > Library Manager > MFRC522```
+
 ### Pin Settings
 - ESP32-S3
 ```

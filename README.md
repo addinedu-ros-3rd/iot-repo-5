@@ -134,22 +134,21 @@ SS_PIN      10
 
 ---
 
-## SetBack & Improvements & Wrap Up
+## SetBacks & Improvements & Wrap Up
 
-### SetBack
-1. esp32-s3와 esp32 nano의 호환성 문제로 코드 통합 실패
-2. 납땜 잘못해서 mpu센서 태워먹고 납땜 안하다가 오히려 삽질 더 함
-3. socket 통신 이론 부족으로 인한 패킷 드랍 현상
-4. PID 제어 미흡
-5. 
+### Project SetBacks 
+1. Compatibility of hardware configuration with the planned function implementations was not throughly checked in advanced.  
+2. Some libraries used during the test period was only available to Arduino Nano ESP32, and not to Esspressif ESP32-S3, causing code integration failures.
+3. Unsolved packet loss due to inadequate background knowledge in socket programming.
+4. Guess and check method for PID control was not efficient considering the given amount of time for this project.
+5. Inept soldering skills.
 6. 시나리오 미흡
-7. 하드웨어 구성이 기능 구현에 무리가 없는지 사전 확인이 부족 (센서 사용법, 전장 설계 등등)
 
 
-### Improvements
-1. QT에서 모니터링 그래프 구현
-2. QT 키로거 DB 생성 안함
-3. 코드 통합
+### Things to Improve
+1. Modify code to integrate all the functionalities seamlessly.
+2. Generate monitoring graphs on PyQt GUI.
+3. Add generated keylogger to database
 4. 통신 제대로 구현
 
 

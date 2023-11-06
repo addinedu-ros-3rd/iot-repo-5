@@ -1,5 +1,10 @@
 # Self Balancing Robot
 
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=Python&logoColor=white">
+<img src="https://img.shields.io/badge/Arduino-00878F?style=for-the-badge&logo=Arduino&logoColor=white">  
+
+<img src="https://img.shields.io/badge/qt-41CD52?style=for-the-badge&logo=qt&logoColor=white">
+
 ## What is Self Balancing Robot
 > __Self Balancing Robot__ is a robot that stands on its own like __Segway__.
 This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L298N__ and __MPU6050__.
@@ -69,3 +74,7 @@ SS_PIN      10
 - [Espressif - ESP32](https://github.com/espressif/arduino-esp32)
 - [PyQt5 Docs](https://doc.qt.io/qtforpython-5/PySide2/QtWidgets/index.html)
 - [I2CDev - MPU6050](https://github.com/jrowberg/i2cdevlib/tree/master/Arduino/MPU6050)
+
+
+## Details of Making
+> See ```IoT_PJT_SelfBalancingRobot.pptx```

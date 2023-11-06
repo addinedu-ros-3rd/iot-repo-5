@@ -2,9 +2,29 @@
 
 <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=Python&logoColor=white"> <img src="https://img.shields.io/badge/Arduino-00878F?style=for-the-badge&logo=Arduino&logoColor=white"> <img src="https://img.shields.io/badge/qt-41CD52?style=for-the-badge&logo=qt&logoColor=white">
 
+---
+
+## index
+
+- [What is Self Balancing Robot](#what-is-self-balacing-robot)
+- [Used](#used)
+- [Body Design](#body-design)
+- [How To Use](#how-to-use)
+    - [Installation](#installation)
+    - [Pin Settings](#pin-settings)
+    - [Program Settings](#program-settings)
+- [If you want to PID Controll (Only PID Motor Controll) - ESP32 Nano](#if-you-want-to-pid-controll-only-pid-motor-controll---esp32-nano)
+    - [Pin Settings](#pin-settings-1)
+    - [Program Settings](#program-settings-1)
+- [Reference](#reference)
+- [Details of Making](#details-of-making)
+---
+
 ## What is Self Balancing Robot
 > __Self Balancing Robot__ is a robot that stands on its own like __Segway__.
 This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L298N__ and __MPU6050__.
+
+---
 
 ## Used
 - MCU   :   Espressif ESP32-S3 N16R8, Arduino Uno
@@ -15,8 +35,12 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 - Battery   :   1.5V * 4
 - RFID      :   MFRC522
 
+---
+
 ## Body Design
 ![Alt text](Body_design.png)
+
+---
 
 ## How To Use
 ### Installation
@@ -65,6 +89,8 @@ SS_PIN      10
     2-2. Open ```main.py``` and fix IP on line 20  
 3. Run ```main.py```
 
+---
+
 ## If you want to PID Controll (Only PID Motor Controll) - ESP32 Nano
 
 ### Pin Settings
@@ -74,12 +100,14 @@ SS_PIN      10
 ### Program Settings
 1. Build ```Balanced_Robot/Balanced_Robot.ino``` into ESP32 Nano
 
+---
 
 ## Reference
 - [Espressif - ESP32](https://github.com/espressif/arduino-esp32)
 - [PyQt5 Docs](https://doc.qt.io/qtforpython-5/PySide2/QtWidgets/index.html)
 - [I2CDev - MPU6050](https://github.com/jrowberg/i2cdevlib/tree/master/Arduino/MPU6050)
 
+---
 
 ## Details of Making
 > See ```IoT_PJT_SelfBalancingRobot.pptx```

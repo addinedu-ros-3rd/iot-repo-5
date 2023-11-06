@@ -26,6 +26,9 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 ### Pin Settings
 - ESP32-S3
 ```
+TX 17, RX 18
+
+--------------------------
 MPU6050
 
 SCL 1
@@ -33,7 +36,6 @@ SDA 2
 INTERRUPT   14
 
 --------------------------
-
 L298N
 
 IN1 9
@@ -42,9 +44,14 @@ IN4 5
 IN3 6
 ENA 10  // Right Side Motor
 ENB 4  // Left Side Motor
+
 ```
 - UNO
 ```
+RX 0
+TX 1
+
+--------------------------
 MRFC522
 
 RST_PIN     9     

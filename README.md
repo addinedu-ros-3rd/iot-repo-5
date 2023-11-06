@@ -61,8 +61,9 @@ SS_PIN      10
 ### Program Settings
 1. Build ```uno_final/uno_final.ino``` into Arduino Uno
 2. Build ```esp32_final/esp32_final.ino``` into ESP32-S3
+    2-1. Connect ESP32-S3 with Serial and Press Reset to find out WIFI IP
+    2-2. Open ```main.py``` and fix IP on line 20
 3. Run ```main.py```
-
 
 ## If you want to PID Controll (Only PID Motor Controll) - ESP32 Nano
 

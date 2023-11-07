@@ -1,6 +1,6 @@
 # Self Balancing Robot
 
-<img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"> <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=Python&logoColor=white"> <img src="https://img.shields.io/badge/Arduino-00878F?style=for-the-badge&logo=Arduino&logoColor=white"> <img src="https://img.shields.io/badge/qt-41CD52?style=for-the-badge&logo=qt&logoColor=white"> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+<img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"> <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=Python&logoColor=white"> <img src="https://img.shields.io/badge/c++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white"> <img src="https://img.shields.io/badge/Arduino-00878F?style=for-the-badge&logo=Arduino&logoColor=white"> <img src="https://img.shields.io/badge/qt-41CD52?style=for-the-badge&logo=qt&logoColor=white"> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
 
 ---
 
@@ -35,12 +35,11 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 ---
 
 ## Author
-|역할|문서영|조홍기|
-|---|---|---|
-||DC모터 제어|GUI 프로그램 제작|
-||하드웨어 설계 및 전장|RFID 모듈 담당|
-||MPU6050 센싱|ESP32 WIFI 소켓 통신|
-||DB 관련 작업|UNO-ESP32 UART통신|
+
+|이름|역할|
+|---|---|
+|문서영|DC모터 제어, 하드웨어 설계 및 전장, MPU6050 센싱, DB 관련 작업
+|조홍기|GUI 프로그램 제작, RFID 모듈 담당, ESP32 WIFI 소켓 통신, UNO-ESP32 UART통신
 
 ---
 

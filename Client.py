@@ -26,7 +26,9 @@ class Client(QThread):
         try:
             self.socket.connect((addr, port))
             self.running = True
+            print("Connect Success")
         except:
+            print("Connect Failed")
             raise
 
         self.timer = QTimer(self)

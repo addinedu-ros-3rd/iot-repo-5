@@ -20,10 +20,9 @@ class WindowClass(QMainWindow, from_class) :
         self.setupUi(self)
 
         try:
+            print("Try to connect")
             self.client = Client("192.168.4.1", 80)
-            print("Connect Success")
         except :
-            print("Connect Failed")
             sys.exit()
 
         # self.client.rfid_user.connect(self.emitUser)  

@@ -25,6 +25,9 @@
 - [Acknowledgements](#acknowledgements)
 ---
 
+![](images/selfBalancingRobot-test.gif)
+![](images/Hardware_Diagram.png)
+
 ## What is Self Balancing Robot
 > __Self Balancing Robot__ is a robot that stands on its own like __Segway__.
 This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L298N__ and __MPU6050__.
@@ -34,10 +37,10 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 ## Author
 |역할|문서영|조홍기|
 |---|---|---|
-||DC모터 제어|PyQt 프로그램 제작|
-||하드웨어 설계 및 전장|RFID 센싱|
-||MPU6050 센싱|ESP32 (유/무선) 통신|
-||DB 관련 작업|UNO-ESP32 시리얼통신|
+||DC모터 제어|GUI 프로그램 제작|
+||하드웨어 설계 및 전장|RFID 모듈 담당|
+||MPU6050 센싱|ESP32 WIFI 소켓 통신|
+||DB 관련 작업|UNO-ESP32 UART통신|
 
 ---
 
@@ -70,7 +73,7 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 ---
 
 ## Body Design
-![Alt text](Body_design.png)
+![Alt text](images/Body_design.png)
 
 ---
 
@@ -127,14 +130,14 @@ SS_PIN      10
 
 ### Pin Settings
 - ESP32 Nano
-![](<Balanced Robot.png>)
+![](<images/Balanced Robot.png>)
 
 ### Program Settings
 1. Build ```Balanced_Robot/Balanced_Robot.ino``` into ESP32 Nano
 
 ---
 
-## SetBacks & Improvements & Wrap Up
+## SetBacks & Wrap Up
 
 ### Project SetBacks 
 1. Compatibility of hardware configuration with the planned function implementations was not throughly checked in advanced.  
@@ -142,15 +145,6 @@ SS_PIN      10
 3. Unsolved packet loss due to inadequate background knowledge in socket programming.
 4. Heuristic (trial-and-error) method for PID control was not efficient considering the given amount of time for this project.
 5. Inept soldering skills.
-
-
-### Things to Improve
-1. Modify code to integrate all the functionalities seamlessly.
-2. Generate monitoring graphs on PyQt GUI.
-3. Add generated keylogger to database.
-4. Develop specific application of this robot. 
-5. 통신 제대로 구현
-
 
 ### Wrap Up
 1. Controlling motors by tuning PID requires depth knowledge in many fields as dynamics of the system and difference in tuning methods.
@@ -160,6 +154,15 @@ SS_PIN      10
 5. 여러 통신 기술에 대해 얇고 넓게 알게됨
 6. MCU와의 통신에서 어떤 공부를 해야할지 감이 옴.
 7. ESP32-S3와 같은 생소한 MCU를 다룰 때 제품 설명서를 어떻게 읽고 사용해야할지 조금 이해함.
+
+---
+
+## To Do
+1. Integrate Code.
+2. MPU6050 Monitoring Graph.
+3. GUI KeyLogger.
+4. Develop specific application of this robot. 
+5. Improve Socket Communication 
 
 ---
 

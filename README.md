@@ -138,28 +138,29 @@ SS_PIN      10
 
 ### Project SetBacks 
 1. Compatibility of hardware configuration with the planned function implementations was not throughly checked in advanced.  
-2. Some libraries used during the test period was only available to Arduino Nano ESP32, and not to Esspressif ESP32-S3, causing code integration failures.
+2. Some libraries used during the test period were only available to Arduino Nano ESP32, and not to Esspressif ESP32-S3, causing code integration failures.
 3. Unsolved packet loss due to inadequate background knowledge in socket programming.
-4. Guess and check method for PID control was not efficient considering the given amount of time for this project.
+4. Heuristic (trial-and-error) method for PID control was not efficient considering the given amount of time for this project.
 5. Inept soldering skills.
-6. 시나리오 미흡
 
 
 ### Things to Improve
 1. Modify code to integrate all the functionalities seamlessly.
 2. Generate monitoring graphs on PyQt GUI.
-3. Add generated keylogger to database
-4. 통신 제대로 구현
+3. Add generated keylogger to database.
+4. Develop specific application of this robot. 
+5. 통신 제대로 구현
 
 
 ### Wrap Up
-1. 모터를 PID tuning을 통해 제어하려면 많은 배경지식이 필요하다 절실히 느낌
-2. 다음에는 물성을 수식화된 시스템으로  PID tuning을 해보고 싶음
-3. 하드웨어의 특성과 한계를 폭 넓게 이해하기
-4. 여러 통신 기술에 대해 얇고 넓게 알게됨
-5. MCU와의 통신에서 어떤 공부를 해야할지 감이 옴.
-6. ESP32-S3와 같은 생소한 MCU를 다룰 때 제품 설명서를 어떻게 읽고 사용해야할지 조금 이해함.
-7. 납땜이 매우매우매우매우매우매우 중요했음. 지금은 개인이 쓸 정도는 할 수 있게 되었음.
+1. Controlling motors by tuning PID requires depth knowledge in many fields as dynamics of the system and difference in tuning methods.
+2. It would be remarkable to be able to design model which can be expressed in mathematical equations such can lead to model-based tuning to control PID instead of guess and check method.
+3. Reading and analyzing hardware specifications to pick fit material for the projects.
+4. Every pin should be soldered in place.
+5. 여러 통신 기술에 대해 얇고 넓게 알게됨
+6. MCU와의 통신에서 어떤 공부를 해야할지 감이 옴.
+7. ESP32-S3와 같은 생소한 MCU를 다룰 때 제품 설명서를 어떻게 읽고 사용해야할지 조금 이해함.
+
 ---
 
 ## Acknowledgements

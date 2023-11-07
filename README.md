@@ -18,10 +18,10 @@
 - [If you want to PID Controll (Only PID Motor Controll) - ESP32 Nano](#if-you-want-to-pid-controll-only-pid-motor-controll---esp32-nano)
     - [Pin Settings](#pin-settings-1)
     - [Program Settings](#program-settings-1)
-- [SetBack & Improvements & Wrap Up](#setback--improvements--wrap-up)
-    - [SetBack](#setback)
-    - [Improvements](#improvements)
+- [Setback & Wrap Up](#setbacks--wrap-up)
+    - [Project Setback](#project-setbacks)
     - [Wrap Up](#wrap-up)
+- [To Do](#to-do)
 - [Acknowledgements](#acknowledgements)
 ---
 
@@ -55,8 +55,8 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 1. Wireless Data Communication using __Wifi AP__
 2. __PID control__
 3. __Access MPU6050 registries__ to get Acceleration and Gyroscope values
-4. Sense __RFID__ tags
-5. Remote Control using __QT__
+4. Read __RFID__ tags
+5. Remote Control using __GUI__
 6. Log Sensor Data into __MySQL__
 ---
 
@@ -125,7 +125,7 @@ SS_PIN      10
 
 ---
 
-## If you want to PID Controll (Only PID Motor Controll) - ESP32 Nano
+## If you want to PID Control (Only PID Motor Control) - ESP32 Nano
 
 ### Pin Settings
 - ESP32 Nano
@@ -136,7 +136,7 @@ SS_PIN      10
 
 ---
 
-## SetBacks & Wrap Up
+## Setbacks & Wrap Up
 
 ### Project Setbacks 
 1. Compatibility of hardware configuration with the planned function implementations was not throughly checked in advanced.  

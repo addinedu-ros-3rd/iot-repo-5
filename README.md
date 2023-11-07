@@ -139,30 +139,28 @@ SS_PIN      10
 
 ## SetBacks & Wrap Up
 
-### Project SetBacks 
+### Project Setbacks 
 1. Compatibility of hardware configuration with the planned function implementations was not throughly checked in advanced.  
 2. Some libraries used during the test period were only available to Arduino Nano ESP32, and not to Esspressif ESP32-S3, causing code integration failures.
 3. Unsolved packet loss due to inadequate background knowledge in socket programming.
-4. Heuristic (trial-and-error) method for PID control was not efficient considering the given amount of time for this project.
+4. Contrary to the prior expectation, heuristic (trial-and-error) method to determine PID values turned out to be inefficient considering the given amount of time and resources for this project.
 5. Inept soldering skills.
 
 ### Wrap Up
 1. Controlling motors by tuning PID requires depth knowledge in many fields as dynamics of the system and difference in tuning methods.
 2. It would be remarkable to be able to design model which can be expressed in mathematical equations such can lead to model-based tuning to control PID instead of guess and check method.
-3. Reading and analyzing hardware specifications to pick fit material for the projects.
+3. Reading and analyzing hardware specifications to choose fit materials for the projects and to discover how to use them are crucial.
 4. Every pin should be soldered in place.
-5. 여러 통신 기술에 대해 얇고 넓게 알게됨
-6. MCU와의 통신에서 어떤 공부를 해야할지 감이 옴.
-7. ESP32-S3와 같은 생소한 MCU를 다룰 때 제품 설명서를 어떻게 읽고 사용해야할지 조금 이해함.
+5. This project enlightened the team on the subject of data communications and computer networks.
 
 ---
 
 ## To Do
-1. Integrate Code.
-2. MPU6050 Monitoring Graph.
-3. GUI KeyLogger.
-4. Develop specific application of this robot. 
-5. Improve Socket Communication 
+1. Integrate the code seamlessly.
+2. Add MPU6050 monitoring graph on the controller UI.
+3. Add keylogger interface for both UI and database.
+4. Develop specific real-life application of this robot. 
+5. Revamp socket communication.
 
 ---
 

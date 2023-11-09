@@ -25,8 +25,13 @@
 - [Acknowledgements](#acknowledgements)
 ---
 
+- Preview
 ![](images/selfBalancingRobot-test.gif)
+
+- Hardware Diagram
 ![](images/Hardware_Diagram.png)
+
+- State Diagram
 ![](images/State_diagram.png)
 
 ## What is Self Balancing Robot
@@ -37,10 +42,10 @@ This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L29
 
 ## Author
 
-|이름|역할|
+|Name|Role|
 |---|---|
-|문서영|DC모터 제어, 하드웨어 설계 및 전장, MPU6050 센싱, DB 관련 작업
-|조홍기|GUI 프로그램 제작, RFID 모듈 담당, ESP32 WIFI 소켓 통신, UNO-ESP32 UART통신
+|raematchaaa|Control Motor, Hardware & Electric Devices, Sense MPU6050, DB|
+|chohongki|GUI (QT), Read RFID, WIFI Socket, UART|
 
 ---
 

@@ -34,6 +34,9 @@
 - State Diagram
 ![](images/State_diagram.png)
 
+- Database Diagram
+![](images/Database_Diagram.png)
+
 ## What is Self Balancing Robot
 > __Self Balancing Robot__ is a robot that stands on its own like __Segway__.
 This Robot requires __PID motor control__ and __Gyro sensor__, and we used __L298N__ and __MPU6050__.
